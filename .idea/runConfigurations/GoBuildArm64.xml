@@ -1,0 +1,18 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="GoBuildArm64" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <module name="BlueSky" />
+    <working_directory value="$PROJECT_DIR$" />
+    <go_parameters value="-buildmode=c-shared -o output/android/arm64-v8a/libcore.so" />
+    <envs>
+      <env name="GOARCH" value="arm64" />
+      <env name="GOOS" value="android" />
+      <env name="CGO_ENABLED" value="1" />
+      <env name="CC" value="C:\Users\Administrator\AppData\Local\Android\Sdk\ndk\22.1.7171670\toolchains\llvm\prebuilt\windows-x86_64\bin\aarch64-linux-android21-clang" />
+    </envs>
+    <kind value="FILE" />
+    <filePath value="$PROJECT_DIR$/src/main.go" />
+    <directory value="$PROJECT_DIR$" />
+    <option name="run" value="false" />
+    <method v="2" />
+  </configuration>
+</component>
