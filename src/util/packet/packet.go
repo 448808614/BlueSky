@@ -63,3 +63,7 @@ func CreateBuilderByData(data []byte) *Packet {
 func CreateBuilder() *Packet {
 	return &Packet{buffer: bytes.NewBuffer([]byte{})}
 }
+
+func ToByteArray(str string) []byte {
+	return []byte(str)
+}
