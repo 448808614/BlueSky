@@ -1,16 +1,10 @@
 package main
 
 import "C"
-import "util/http"
+import "api"
 
 func main() {
-	createHttp := http.CreateHttp()
-
-	resp := createHttp.Get("https://blog.csdn.net/fyxichen/article/details/51258351")
-
-	if resp != nil {
-		println(string(resp.Body))
-	}
+	api.GetTencentServer()
 
 }
 

@@ -2,7 +2,6 @@ package hex
 
 import (
 	"encoding/hex"
-	"util/packet"
 )
 
 // 字节转hex
@@ -14,7 +13,7 @@ func Bytes2Str(src []byte) string {
 
 // hex转字节
 func Str2Bytes(hexStr string) []byte {
-	src := packet.ToByteArray(hexStr)
+	src := []byte(hexStr)
 	dst := make([]byte, hex.DecodedLen(len(src)))
 	_, err := hex.Decode(dst, src)
 	if err != nil {

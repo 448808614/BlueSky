@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"strings"
-	"util/packet"
 )
 
 type Http struct {
@@ -47,7 +46,7 @@ func (http *Http) PostBin(url string, data []byte) *Respond {
 }
 
 func (http *Http) PostJson(url string, data string) *Respond {
-	return sendPostJson(url, packet.ToByteArray(data), http.header, http.cookie)
+	return sendPostJson(url, []byte(data), http.header, http.cookie)
 }
 
 func sendPostJson(url string, data []byte, header map[string]string, cookie map[string]string) *Respond {
