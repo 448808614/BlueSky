@@ -16,6 +16,9 @@ Go版本号：1.16
  
  - 安装GCC编译器并设置环境变量
 
+ - 导入项目后请按照文章安装Protobuf
+   </br>**https://blog.csdn.net/JunChow520/article/details/115345622**
+
 ### 常见问题
 
  1. 某Go模块未找到

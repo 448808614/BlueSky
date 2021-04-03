@@ -57,6 +57,7 @@ func sendPostJson(url string, data []byte, header map[string]string, cookie map[
 		log.Default().Println("[Request0x5]", err)
 		return nil
 	}
+	request.Header.Set("User-Agent", "CoolQ-http-client/2.0")
 	for key, value := range header {
 		request.Header.Add(key, value)
 	}
@@ -91,6 +92,7 @@ func sendPostBin(url string, data []byte, header map[string]string, cookie map[s
 		log.Default().Println("[Request0x5]", err)
 		return nil
 	}
+	request.Header.Set("User-Agent", "CoolQ-http-client/2.0")
 	for key, value := range header {
 		request.Header.Add(key, value)
 	}
@@ -126,6 +128,7 @@ func sendPost(url string, data string, header map[string]string, cookie map[stri
 		log.Default().Println("[Request0x5]", err)
 		return nil
 	}
+	request.Header.Set("User-Agent", "CoolQ-http-client/2.0")
 	for key, value := range header {
 		request.Header.Add(key, value)
 	}
@@ -159,6 +162,7 @@ func sendGet(url string, header map[string]string, cookie map[string]string) *Re
 		log.Default().Println("[Request0x9]", err)
 		return nil
 	}
+	request.Header.Set("User-Agent", "CoolQ-http-client/2.0")
 	for key, value := range header {
 		request.Header.Add(key, value)
 	}

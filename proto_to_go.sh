@@ -1,0 +1,1 @@
+cd src/proto && protoc *.proto --gofast_out=.

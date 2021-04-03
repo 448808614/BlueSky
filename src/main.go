@@ -1,10 +1,8 @@
 package main
 
 import "C"
-import "api"
 
 func main() {
-	api.GetTencentServer()
 
 }
 
