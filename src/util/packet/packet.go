@@ -5,7 +5,6 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
-	"other/mahonia"
 	"util/hex"
 )
 
@@ -95,14 +94,6 @@ func BufToInt32(b []byte) (int, error) {
 		}
 	}
 	return 0, errors.New("Can't convert")
-}
-
-func ConvertCoding(src string, srcCode string, tagCode string) []byte {
-	srcCoder := mahonia.NewDecoder(srcCode)
-	srcResult := srcCoder.ConvertString(src)
-	tagCoder := mahonia.NewDecoder(tagCode)
-	_, cdata, _ := tagCoder.Translate([]byte(srcResult), true)
-	return cdata
 }
 
 func Int32ToBuf(i int) []byte {

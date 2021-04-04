@@ -6,7 +6,7 @@ func main() {
 
 }
 
-//export test
-func test() string {
-	return "Hello Go!!!"
+//export love
+func love() string {
+	return "这个世界上的美丽多半大同小异，就好比我觉得好看的人，都像你。"
 }
