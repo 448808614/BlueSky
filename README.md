@@ -19,8 +19,6 @@ Go版本号：1.16
  - 导入项目后请按照文章安装Protobuf
    </br>**https://blog.csdn.net/JunChow520/article/details/115345622**
 
- - 执行**go get github.com/axgle/mahonia**安装编码转换模块
-
 ### 常见问题
 
  1. 某Go模块未找到
