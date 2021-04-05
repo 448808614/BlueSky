@@ -26,10 +26,14 @@ type TencentServer struct {
 }
 
 type ProtocolInfo struct {
-	MsfAppId  int
-	SubAppId  int
-	IpVersion int
-	LocalId   int
+	MsfAppId      int
+	SubAppId      int
+	IpVersion     int
+	LocalId       int
+	PingVersion   int
+	SSoVersion    int
+	DbVersion     int
+	MsfSSoVersion int
 }
 
 // 获取腾讯QQ服务器
@@ -66,10 +70,14 @@ func GetProtocolInfo(isHd bool) *ProtocolInfo {
 		version := json2.GetString(data, latestKey)
 		info := json2.Get(data, version)
 		return &ProtocolInfo{
-			MsfAppId:  json2.GetInt(info, "appid"),
-			SubAppId:  json2.GetInt(info, "subAppid"),
-			IpVersion: json2.GetInt(info, "ipVersion"),
-			LocalId:   json2.GetInt(info, "lId"),
+			MsfAppId:      json2.GetInt(info, "appid"),
+			SubAppId:      json2.GetInt(info, "subAppid"),
+			IpVersion:     json2.GetInt(info, "ipVersion"),
+			LocalId:       json2.GetInt(info, "lId"),
+			PingVersion:   json2.GetInt(info, "pingVersion"),
+			SSoVersion:    json2.GetInt(info, "ssoVer"),
+			DbVersion:     json2.GetInt(info, "dbVer"),
+			MsfSSoVersion: json2.GetInt(info, "msfSsoVer"),
 		}
 	}
 	log.Default().Println("登录失败，无法获取协议信息")

@@ -4,6 +4,7 @@ import (
 	account2 "androidqq/account"
 	"androidqq/record"
 	"api"
+	"util/hex"
 )
 
 type Tlv struct {
@@ -13,7 +14,7 @@ type Tlv struct {
 }
 
 func (t *Tlv) T1() []byte {
-	buffer := newBuffer(1)
+	buffer := newBuffer(0x1)
 	buffer.WriteShort(t.protocolInfo.IpVersion)
 	buffer.WriteInt(0)
 	buffer.WriteInt(t.account.Uin)
@@ -24,44 +25,61 @@ func (t *Tlv) T1() []byte {
 }
 
 func (t *Tlv) T8() []byte {
-	buffer := newBuffer(8)
+	buffer := newBuffer(0x8)
 	buffer.WriteShort(0)
 	buffer.WriteInt(t.protocolInfo.LocalId)
 	buffer.WriteShort(0)
 	return buffer.ToByteArray()
 }
 
+func (t *Tlv) T18() []byte {
+	buffer := newBuffer(0x18)
+	buffer.WriteShort(t.protocolInfo.PingVersion)
+	buffer.WriteInt(t.protocolInfo.SSoVersion)
+	buffer.WriteInt(t.protocolInfo.SubAppId)
+	buffer.WriteInt(0)
+	buffer.WriteInt(t.account.Uin)
+	buffer.WriteShort(0)
+	buffer.WriteShort(0)
+	return buffer.ToByteArray()
+}
+
+func (t *Tlv) T100() []byte {
+	buffer := newBuffer(0x100)
+	buffer.WriteShort(t.protocolInfo.DbVersion)
+	buffer.WriteInt(t.protocolInfo.MsfSSoVersion)
+	buffer.WriteInt(t.protocolInfo.SubAppId)
+	buffer.WriteInt(t.protocolInfo.MsfAppId)
+	buffer.WriteInt(0)
+	buffer.WriteInt(0x21410e0)
+	return buffer.ToByteArray()
+}
+
+func (t *Tlv) T104(dt104 []byte) []byte {
+	buffer := newBuffer(0x104)
+	buffer.WriteBytes(dt104)
+	return buffer.ToByteArray()
+}
+
+func (t *Tlv) T107() []byte {
+	buffer := newBuffer(0x107)
+	buffer.WriteShort(0)
+	buffer.WriteByte(0)
+	buffer.WriteShort(0)
+	buffer.WriteByte(1)
+	return buffer.ToByteArray()
+}
+
+func (t *Tlv) T108(ksid []byte) []byte {
+	buffer := newBuffer(0x108)
+	if ksid == nil {
+		ksid = hex.Str2Bytes("BF F3 F1 1C 63 EE 2C B1 7D 96 77 02 A3 6E 25 12")
+	}
+	buffer.WriteBytes(ksid)
+	return buffer.ToByteArray()
+}
+
 /**
-fun t18(): ByteArray = TlvBuilder(0x18)
-.writeShort(iqq.pingVersion())
-.writeInt(iqq.ssoVersion())
-.writeInt(iqq.subAppId())
-.writeInt(0)
-.writeInt(account.user)
-.writeShort(0)
-.writeShort(0)
-.toByteArray()
-
-fun t100(): ByteArray = TlvBuilder(0x100)
-.writeShort(iqq.dbVersion())
-.writeInt(iqq.msfSsoVersion())
-.writeInt(iqq.subAppId())
-.writeInt(iqq.appId())
-.writeInt(0)
-.writeInt(0x21410e0)
-.toByteArray()
-
-fun t104(dt104: ByteArray?): ByteArray = TlvBuilder(0x104)
-.writeBytes(dt104)
-.toByteArray()
-
-fun t107(): ByteArray = TlvBuilder(0x107)
-.writeShort(0)
-.writeByte(0.toByte())
-.writeShort(0)
-.writeByte(1.toByte())
-.toByteArray()
-
 fun t108(ksid: ByteArray?): ByteArray = TlvBuilder(0x108)
 .writeBytes(ksid ?: "BF F3 F1 1C 63 EE 2C B1 7D 96 77 02 A3 6E 25 12".hexToBs())
 .toByteArray()
