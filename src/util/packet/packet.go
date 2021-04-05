@@ -17,6 +17,16 @@ func (packet *Packet) WriteByte(i int) error {
 	return binary.Write(packet.buffer, binary.BigEndian, &j)
 }
 
+func (packet *Packet) WriteString(s string) error {
+	_, err := packet.buffer.WriteString(s)
+	return err
+}
+
+func (packet *Packet) WriteBytes(bs []byte) error {
+	_, err := packet.buffer.Write(bs)
+	return err
+}
+
 func (packet *Packet) WriteBoolean(z bool) error {
 	var tmp byte = 0
 	if z {

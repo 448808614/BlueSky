@@ -19,6 +19,11 @@ Go版本号：1.16
  - 导入项目后请按照文章安装Protobuf
    </br>**https://blog.csdn.net/JunChow520/article/details/115345622**
 
+## 需要安装的Go模块
+
+ - github.com/buger/jsonparser
+
+
 ### 常见问题
 
  1. 某Go模块未找到
@@ -26,7 +31,6 @@ Go版本号：1.16
     
  2. 某Go模块无法下载
     </br>方案：设置GoMod代理为中国境内源
-
 
 #### Android平台打包核心
 

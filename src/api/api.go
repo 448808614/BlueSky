@@ -2,8 +2,10 @@ package api
 
 import (
 	"encoding/json"
+	"log"
 	"strconv"
 	"util/http"
+	json2 "util/json"
 )
 
 // 云端API接口服务·类
@@ -21,6 +23,13 @@ type tencentServerRet struct {
 type TencentServer struct {
 	Host string
 	Port int
+}
+
+type ProtocolInfo struct {
+	MsfAppId  int
+	SubAppId  int
+	IpVersion int
+	LocalId   int
 }
 
 // 获取腾讯QQ服务器
@@ -42,4 +51,27 @@ func GetTencentServer() *TencentServer {
 		}
 	}
 	return &TencentServer{host, port}
+}
+
+func GetProtocolInfo(isHd bool) *ProtocolInfo {
+	request := http.CreateHttp()
+	resp := request.Get(centerServer + "Main.protocolInfo")
+	if resp != nil {
+		var latestKey = "latest"
+		if isHd {
+			latestKey = "hdLatest"
+		}
+		body := resp.Body
+		data := json2.Get(body, "data")
+		version := json2.GetString(data, latestKey)
+		info := json2.Get(data, version)
+		return &ProtocolInfo{
+			MsfAppId:  json2.GetInt(info, "appid"),
+			SubAppId:  json2.GetInt(info, "subAppid"),
+			IpVersion: json2.GetInt(info, "ipVersion"),
+			LocalId:   json2.GetInt(info, "lId"),
+		}
+	}
+	log.Default().Println("登录失败，无法获取协议信息")
+	return nil
 }
