@@ -1,9 +1,11 @@
 package tlv
 
 import (
+	"androidqq"
 	account2 "androidqq/account"
 	"androidqq/record"
 	"api"
+	"util/cryptor"
 	"util/hex"
 )
 
@@ -11,6 +13,7 @@ type Tlv struct {
 	account      *account2.BotAccount
 	protocolInfo *api.ProtocolInfo
 	record       *record.BotRecord
+	android      *androidqq.Android
 }
 
 func (t *Tlv) T1() []byte {
@@ -79,15 +82,13 @@ func (t *Tlv) T108(ksid []byte) []byte {
 	return buffer.ToByteArray()
 }
 
+func (t *Tlv) T109() []byte {
+	buffer := newBuffer(0x109)
+	buffer.WriteBytes(cryptor.ToMd5BytesV2(t.android.AndroidId))
+	return buffer.ToByteArray()
+}
+
 /**
-fun t108(ksid: ByteArray?): ByteArray = TlvBuilder(0x108)
-.writeBytes(ksid ?: "BF F3 F1 1C 63 EE 2C B1 7D 96 77 02 A3 6E 25 12".hexToBs())
-.toByteArray()
-
-private fun t109(): ByteArray = TlvBuilder(0x109)
-.writeBytes(MD5.toMD5Byte(Android.androidId))
-.toByteArray()
-
 fun t116(): ByteArray = TlvBuilder(0x116)
 .writeByte(0.toByte())
 // ver
