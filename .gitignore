@@ -1,3 +1,5 @@
 /src/github.com/golang/protobuf/
 /src/github.com/gogo/
 /src/output/
+/src/google.golang.org/
+/src/github.com/

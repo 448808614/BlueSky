@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package login;
+
+message DeviceReport {
+  bytes bootloader = 1;
+  bytes version = 2;
+  bytes codename = 3;
+  bytes incremental = 4;
+  bytes fingerprint = 5;
+  bytes boot_id = 6;
+  bytes android_id = 7;
+  bytes baseband = 8;
+  bytes inner_ver = 9;
+}
+
+
+

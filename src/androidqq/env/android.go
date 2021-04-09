@@ -1,4 +1,4 @@
-package androidqq
+package env
 
 type Android struct {
 	Imsi                 string

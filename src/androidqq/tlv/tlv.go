@@ -1,8 +1,8 @@
 package tlv
 
 import (
-	"androidqq"
 	account2 "androidqq/account"
+	"androidqq/env"
 	"androidqq/record"
 	"api"
 	"util/cryptor"
@@ -13,7 +13,7 @@ type Tlv struct {
 	account      *account2.BotAccount
 	protocolInfo *api.ProtocolInfo
 	record       *record.BotRecord
-	android      *androidqq.Android
+	android      *env.Android
 }
 
 func (t *Tlv) T1() []byte {

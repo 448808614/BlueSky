@@ -1,1 +1,1 @@
-cd src/proto && protoc *.proto --gofast_out=.
+cd src/protocol/protobuf && protoc *.proto --gofast_out=.
