@@ -8,8 +8,7 @@ import (
 	json2 "util/json"
 )
 
-// 云端API接口服务·类
-
+// 云端API接口服务API
 const centerServer = "https://www.luololi.cn/?s="
 
 type tencentServerRet struct {
@@ -34,9 +33,11 @@ type ProtocolInfo struct {
 	SSoVersion    int
 	DbVersion     int
 	MsfSSoVersion int
+	MiscBitmap    int
+	SubSigMap     int
 }
 
-// 获取腾讯QQ服务器
+// GetTencentServer 获取腾讯QQ服务器
 func GetTencentServer() *TencentServer {
 	var host = "msfwifi.3g.qq.com"
 	var port = 8080
@@ -78,6 +79,8 @@ func GetProtocolInfo(isHd bool) *ProtocolInfo {
 			SSoVersion:    json2.GetInt(info, "ssoVer"),
 			DbVersion:     json2.GetInt(info, "dbVer"),
 			MsfSSoVersion: json2.GetInt(info, "msfSsoVer"),
+			MiscBitmap:    json2.GetInt(info, "miscBitmap"),
+			SubSigMap:     json2.GetInt(info, "subSigMap"),
 		}
 	}
 	log.Default().Println("登录失败，无法获取协议信息")

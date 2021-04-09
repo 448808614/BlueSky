@@ -1,16 +1,16 @@
 package tlv
 
 import (
-	account2 "androidqq/account"
+	"androidqq/account"
 	"androidqq/env"
 	"androidqq/record"
 	"api"
-	"util/cryptor"
+	"util/cryptor/md5"
 	"util/hex"
 )
 
 type Tlv struct {
-	account      *account2.BotAccount
+	botAccount   *account.BotAccount
 	protocolInfo *api.ProtocolInfo
 	record       *record.BotRecord
 	android      *env.Android
@@ -20,7 +20,7 @@ func (t *Tlv) T1() []byte {
 	buffer := newBuffer(0x1)
 	buffer.WriteShort(t.protocolInfo.IpVersion)
 	buffer.WriteInt(0)
-	buffer.WriteInt(t.account.Uin)
+	buffer.WriteInt(t.botAccount.Uin)
 	buffer.WriteInt(t.record.InitTime)
 	buffer.WriteInt(0)
 	buffer.WriteShort(0)
@@ -41,7 +41,7 @@ func (t *Tlv) T18() []byte {
 	buffer.WriteInt(t.protocolInfo.SSoVersion)
 	buffer.WriteInt(t.protocolInfo.SubAppId)
 	buffer.WriteInt(0)
-	buffer.WriteInt(t.account.Uin)
+	buffer.WriteInt(t.botAccount.Uin)
 	buffer.WriteShort(0)
 	buffer.WriteShort(0)
 	return buffer.ToByteArray()
@@ -84,36 +84,39 @@ func (t *Tlv) T108(ksid []byte) []byte {
 
 func (t *Tlv) T109() []byte {
 	buffer := newBuffer(0x109)
-	buffer.WriteBytes(cryptor.ToMd5BytesV2(t.android.AndroidId))
+	buffer.WriteBytes(md5.ToMd5BytesV2(t.android.AndroidId))
+	return buffer.ToByteArray()
+}
+
+func (t *Tlv) T116() []byte {
+	buffer := newBuffer(0x116)
+	buffer.WriteByte(0)
+	// version
+	buffer.WriteInt(t.protocolInfo.MiscBitmap)
+	buffer.WriteInt(t.protocolInfo.SubSigMap)
+	appIdArray := []int{0x5f5e10e2}
+	buffer.WriteByte(len(appIdArray))
+	for _, i := range appIdArray {
+		buffer.WriteInt(i)
+	}
+	return buffer.ToByteArray()
+}
+
+func (t *Tlv) T1162() []byte {
+	buffer := newBuffer(0x116)
+	buffer.WriteByte(0)
+	// version
+	buffer.WriteInt(0x08F7FF7C)
+	buffer.WriteInt(66560)
+	appIdArray := []int{0x5f5e10e2}
+	buffer.WriteByte(len(appIdArray))
+	for _, i := range appIdArray {
+		buffer.WriteInt(i)
+	}
 	return buffer.ToByteArray()
 }
 
 /**
-fun t116(): ByteArray = TlvBuilder(0x116)
-.writeByte(0.toByte())
-// ver
-.writeInt(iqq.miscBitmap())
-.writeInt(iqq.subSigMap()).apply {
-val appidArray = intArrayOf(0x5f5e10e2)
-writeByte(appidArray.size)
-for (appid in appidArray) {
-writeInt(appid)
-}
-}
-.toByteArray()
-
-fun t1162(): ByteArray = TlvBuilder(0x116)
-.writeByte(0.toByte())
-.writeInt(0x08F7FF7C)
-.writeInt(66560).apply {
-val appidArray = intArrayOf(0x5f5e10e2)
-writeByte(appidArray.size)
-for (appid in appidArray) {
-writeInt(appid)
-}
-}
-.toByteArray()
-
 fun t106(): ByteArray {
 val tlvBuilder = TlvBuilder(0x106)
 val builder = ByteBuilder()

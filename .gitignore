@@ -3,3 +3,4 @@
 /src/output/
 /src/google.golang.org/
 /src/github.com/
+/src/protocol/protobuf/*.go

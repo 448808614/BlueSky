@@ -4,9 +4,6 @@ import "C"
 import (
 	"androidqq"
 	"api"
-	"github.com/gogo/protobuf/proto"
-	login "protocol/protobuf"
-	"util/hex"
 )
 
 var BotMap = map[int]*androidqq.BlueSky{}
@@ -18,13 +15,6 @@ func main() {
 
 	api.GetProtocolInfo(false)
 
-	abcd := login.DeviceReport{}
-
-	abcd.BootId = []byte("你好")
-
-	bytes, _ := proto.Marshal(&abcd)
-
-	println(hex.Bytes2Str(bytes))
 }
 
 //export love
