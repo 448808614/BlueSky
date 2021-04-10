@@ -6,9 +6,6 @@ import (
 	"regexp"
 )
 
-/**
- * 获取电脑CPUId
- */
 func GetCpuId() string {
 	cmd := exec.Command("wmic", "cpu", "get", "ProcessorID")
 	out, err := cmd.CombinedOutput()

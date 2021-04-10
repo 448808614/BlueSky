@@ -23,7 +23,7 @@ type Android struct {
 }
 
 func (a *Android) GetGuid() []byte {
-	return md5.ToMd5BytesV2(a.AndroidId + a.MacAddress)
+	return md5.StrToMd5Bytes(a.AndroidId + a.MacAddress)
 }
 
 func (a *Android) GetKsid() []byte {
@@ -38,5 +38,5 @@ func (a *Android) SetKsid(ksid []byte) {
 }
 
 func (a *Android) GetTgtgKey() []byte {
-	return md5.ToMd5Bytes(append(md5.ToMd5BytesV2(a.MacAddress), a.GetGuid()...))
+	return md5.BsToMd5Bytes(append(md5.StrToMd5Bytes(a.MacAddress), a.GetGuid()...))
 }

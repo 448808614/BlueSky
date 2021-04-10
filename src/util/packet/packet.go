@@ -5,6 +5,7 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
+	"math/rand"
 	"util/hex"
 )
 
@@ -146,4 +147,10 @@ func Int32ToBuf(i int) []byte {
 	bytesBuffer := bytes.NewBuffer([]byte{})
 	binary.Write(bytesBuffer, binary.BigEndian, &tmp)
 	return bytesBuffer.Bytes()
+}
+
+func RandBytes(size int) []byte {
+	key := make([]byte, size)
+	_, _ = rand.Read(key)
+	return key
 }
