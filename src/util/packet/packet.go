@@ -22,6 +22,41 @@ func (packet *Packet) WriteString(s string) error {
 	return err
 }
 
+func (packet *Packet) WriteBytesWithSize(data []byte, add ...int) error {
+	a := 0
+	if len(add) >= 1 {
+		a = add[0]
+	}
+	packet.WriteInt(len(data) + a)
+	return packet.WriteBytes(data)
+}
+
+func (packet *Packet) WriteBytesWithShortSize(data []byte, add ...int) error {
+	a := 0
+	if len(add) >= 1 {
+		a = add[0]
+	}
+	packet.WriteShort(len(data) + a)
+	return packet.WriteBytes(data)
+}
+
+func (packet *Packet) WriteStringWithShortSize(s string, add ...int) error {
+	data := []byte(s)
+	a := 0
+	if len(add) >= 1 {
+		a = add[0]
+	}
+	return packet.WriteBytesWithShortSize(data, a)
+}
+
+func (packet *Packet) WriteStringWithSize(s string, add ...int) error {
+	a := 0
+	if len(add) >= 1 {
+		a = add[0]
+	}
+	return packet.WriteBytesWithSize([]byte(s), a)
+}
+
 func (packet *Packet) WriteBytes(bs []byte) error {
 	_, err := packet.buffer.Write(bs)
 	return err
@@ -66,12 +101,12 @@ func (packet *Packet) Hex() string {
 	return hex.Bytes2Str(packet.Bytes())
 }
 
-// 通过字节组创建字节构建器
+// CreateBuilderByData 通过字节组创建字节构建器
 func CreateBuilderByData(data []byte) *Packet {
 	return &Packet{buffer: bytes.NewBuffer(data)}
 }
 
-// 创建字节构建器
+// CreateBuilder 创建字节构建器
 func CreateBuilder() *Packet {
 	return &Packet{buffer: bytes.NewBuffer([]byte{})}
 }

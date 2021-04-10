@@ -5,23 +5,29 @@ import (
 	"androidqq/env"
 	"androidqq/record"
 	"api"
+	"github.com/gogo/protobuf/proto"
+	"math/rand"
+	login "protocol/protobuf"
+	"strconv"
 	"util/cryptor/md5"
+	"util/cryptor/tea"
 	"util/hex"
+	"util/packet"
 )
 
 type Tlv struct {
-	botAccount   *account.BotAccount
-	protocolInfo *api.ProtocolInfo
-	record       *record.BotRecord
-	android      *env.Android
+	BotAccount   *account.BotAccount
+	ProtocolInfo *api.ProtocolInfo
+	Record       *record.BotRecord
+	Android      *env.Android
 }
 
 func (t *Tlv) T1() []byte {
 	buffer := newBuffer(0x1)
-	buffer.WriteShort(t.protocolInfo.IpVersion)
+	buffer.WriteShort(t.ProtocolInfo.IpVersion)
 	buffer.WriteInt(0)
-	buffer.WriteInt(t.botAccount.Uin)
-	buffer.WriteInt(t.record.InitTime)
+	buffer.WriteInt(t.BotAccount.Uin)
+	buffer.WriteInt(t.Record.InitTime)
 	buffer.WriteInt(0)
 	buffer.WriteShort(0)
 	return buffer.ToByteArray()
@@ -30,18 +36,18 @@ func (t *Tlv) T1() []byte {
 func (t *Tlv) T8() []byte {
 	buffer := newBuffer(0x8)
 	buffer.WriteShort(0)
-	buffer.WriteInt(t.protocolInfo.LocalId)
+	buffer.WriteInt(t.ProtocolInfo.LocalId)
 	buffer.WriteShort(0)
 	return buffer.ToByteArray()
 }
 
 func (t *Tlv) T18() []byte {
 	buffer := newBuffer(0x18)
-	buffer.WriteShort(t.protocolInfo.PingVersion)
-	buffer.WriteInt(t.protocolInfo.SSoVersion)
-	buffer.WriteInt(t.protocolInfo.SubAppId)
+	buffer.WriteShort(t.ProtocolInfo.PingVersion)
+	buffer.WriteInt(t.ProtocolInfo.SSoVersion)
+	buffer.WriteInt(t.ProtocolInfo.SubAppId)
 	buffer.WriteInt(0)
-	buffer.WriteInt(t.botAccount.Uin)
+	buffer.WriteInt(t.BotAccount.Uin)
 	buffer.WriteShort(0)
 	buffer.WriteShort(0)
 	return buffer.ToByteArray()
@@ -49,10 +55,10 @@ func (t *Tlv) T18() []byte {
 
 func (t *Tlv) T100() []byte {
 	buffer := newBuffer(0x100)
-	buffer.WriteShort(t.protocolInfo.DbVersion)
-	buffer.WriteInt(t.protocolInfo.MsfSSoVersion)
-	buffer.WriteInt(t.protocolInfo.SubAppId)
-	buffer.WriteInt(t.protocolInfo.MsfAppId)
+	buffer.WriteShort(t.ProtocolInfo.DbVersion)
+	buffer.WriteInt(t.ProtocolInfo.MsfSSoVersion)
+	buffer.WriteInt(t.ProtocolInfo.SubAppId)
+	buffer.WriteInt(t.ProtocolInfo.MsfAppId)
 	buffer.WriteInt(0)
 	buffer.WriteInt(0x21410e0)
 	return buffer.ToByteArray()
@@ -84,7 +90,7 @@ func (t *Tlv) T108(ksid []byte) []byte {
 
 func (t *Tlv) T109() []byte {
 	buffer := newBuffer(0x109)
-	buffer.WriteBytes(md5.ToMd5BytesV2(t.android.AndroidId))
+	buffer.WriteBytes(md5.ToMd5BytesV2(t.Android.AndroidId))
 	return buffer.ToByteArray()
 }
 
@@ -92,8 +98,8 @@ func (t *Tlv) T116() []byte {
 	buffer := newBuffer(0x116)
 	buffer.WriteByte(0)
 	// version
-	buffer.WriteInt(t.protocolInfo.MiscBitmap)
-	buffer.WriteInt(t.protocolInfo.SubSigMap)
+	buffer.WriteInt(t.ProtocolInfo.MiscBitmap)
+	buffer.WriteInt(t.ProtocolInfo.SubSigMap)
 	appIdArray := []int{0x5f5e10e2}
 	buffer.WriteByte(len(appIdArray))
 	for _, i := range appIdArray {
@@ -116,75 +122,147 @@ func (t *Tlv) T1162() []byte {
 	return buffer.ToByteArray()
 }
 
-/**
-fun t106(): ByteArray {
-val tlvBuilder = TlvBuilder(0x106)
-val builder = ByteBuilder()
-builder.writeShort(iqq.tgtgVersion())
-builder.writeInt(RandomUtil.randInt(0, 828922931))
-builder.writeInt(iqq.msfSsoVersion())
-builder.writeInt(iqq.subAppId())
-builder.writeInt(0)
-builder.writeInt(0)
-builder.writeInt(account.user)
-builder.writeInt(time)
-builder.writeInt(ip)
-builder.writeByte(1.toByte())
-builder.writeBytes(account.md5Password)
-builder.writeBytes(Android.getTgtgKey())
-builder.writeInt(0)
-builder.writeBoolean(iqq.isGuidAvailable)
-builder.writeBytes(Android.getGuid())
-builder.writeInt(iqq.appId())
-builder.writeInt(iqq.loginType())
-builder.writeStringWithShortSize(account.user.toString())
-builder.writeShort(0)
-val data = TeaUtil.encrypt(builder.toByteArray(), account.md5PasswordWithQQ)
-tlvBuilder.writeBytes(data)
-return tlvBuilder.toByteArray()
+// T106 loginType 登录类型
+// 1 为密码登录
+func (t *Tlv) T106(loginType int) []byte {
+	buffer := newBuffer(0x106)
+
+	builder := packet.CreateBuilder()
+	builder.WriteShort(t.ProtocolInfo.TgtVersion)
+	builder.WriteInt(rand.Int())
+	builder.WriteInt(t.ProtocolInfo.MsfSSoVersion)
+	builder.WriteInt(t.ProtocolInfo.SubAppId)
+	builder.WriteInt(0)
+	builder.WriteInt(0)
+	builder.WriteInt(t.BotAccount.Uin)
+	builder.WriteInt(t.Record.InitTime)
+	builder.WriteInt(0)
+	// 上面这个东西是IP傲
+	builder.WriteByte(1)
+	builder.WriteBytes(t.BotAccount.Md5Password())
+	builder.WriteBytes(t.Android.GetTgtgKey())
+	builder.WriteInt(0)
+	builder.WriteBoolean(true)
+	builder.WriteBytes(t.Android.GetGuid())
+	builder.WriteInt(t.ProtocolInfo.MsfAppId)
+	builder.WriteInt(loginType)
+
+	user := strconv.Itoa(t.BotAccount.Uin)
+	builder.WriteShort(len(user))
+	builder.WriteString(user)
+
+	builder.WriteShort(0)
+
+	buffer.WriteBytes(tea.NewCipher(t.BotAccount.Md5UinPassword()).Encrypt(builder.Bytes()))
+
+	return buffer.ToByteArray()
 }
 
-private fun t124(): ByteArray = TlvBuilder(0x124)
-.writeBytesWithShortSize(Android.osType)
-.writeStringWithShortSize(Android.machineVersion)
-.writeShort(when(Android.apn) {
-"5g", "wap", "net", "4gnet", "3gwap", "cncc", "cmcc" -> 1
-"wifi" -> 2
-else -> 0
-})
-// networkType
-.writeStringWithShortSize(Android.apnName)
-.writeStringWithSize(Android.apn)
-.toByteArray()
+func (t *Tlv) T124() []byte {
+	buffer := newBuffer(0x124)
 
-private fun t128(): ByteArray = TlvBuilder(0x128)
-.writeShort(0)
-.writeBoolean(iqq.isGuidFromFileNull)
-.writeBoolean(iqq.isGuidAvailable)
-.writeBoolean(iqq.isGuidChange)
-.writeInt(0x01000000)
-.writeStringWithShortSize(Android.machineName)
-.writeBytesWithShortSize(Android.getGuid())
-.writeStringWithShortSize(Android.machineManufacturer)
-.toByteArray()
+	buffer.WriteStringWithShortSize("android")
+	buffer.WriteStringWithShortSize(t.Android.MachineVersion)
+	switch t.Android.Apn {
+	case "5g", "wap", "net", "4gnet", "3gwap", "cncc", "cmcc", "3gnet", "cmwap", "uniwap":
+		buffer.WriteShort(1)
+	case "wifi":
+		buffer.WriteShort(2)
+	default:
+		buffer.WriteShort(0)
+	}
+	// 在线状态书写 by: QQ逆向
+	buffer.WriteStringWithShortSize(t.Android.Apn)
+	buffer.WriteStringWithSize(t.Android.ApnName)
+	return buffer.ToByteArray()
+}
 
-fun t141(): ByteArray = TlvBuilder(0x141)
-.writeShort(1)
-// version
-.writeStringWithShortSize(Android.apnName)
-.writeShort(when(Android.apn) {
-"5g", "wap", "net", "4gnet", "3gwap", "cncc", "cmcc" -> 1
-"wifi" -> 2
-else -> 0
-})
-.writeStringWithShortSize(Android.apn)
-.toByteArray()
+func (t *Tlv) T128() []byte {
+	buffer := newBuffer(0x128)
+	buffer.WriteShort(0)
+	buffer.WriteBoolean(true)
+	buffer.WriteBoolean(false)
+	buffer.WriteBoolean(false)
+	buffer.WriteInt(0x01000000)
+	buffer.WriteStringWithShortSize(t.Android.MachineName)
+	buffer.WriteBytesWithShortSize(t.Android.GetGuid())
+	buffer.WriteStringWithShortSize(t.Android.MachineManufacturer)
+	return buffer.ToByteArray()
+}
 
-fun t142(): ByteArray = TlvBuilder(0x142)
-.writeShort(0)
-.writeStringWithShortSize(iqq.packageName())
-.toByteArray()
+func (t *Tlv) T141() []byte {
+	buffer := newBuffer(0x141)
+	buffer.WriteShort(1)
+	buffer.WriteStringWithShortSize(t.Android.ApnName)
+	switch t.Android.Apn {
+	case "5g", "wap", "net", "4gnet", "3gwap", "cncc", "cmcc", "3gnet", "cmwap", "uniwap":
+		buffer.WriteShort(1)
+	case "wifi":
+		buffer.WriteShort(2)
+	default:
+		buffer.WriteShort(0)
+	}
+	buffer.WriteStringWithShortSize(t.Android.Apn)
+	return buffer.ToByteArray()
+}
 
+func (t *Tlv) T142() []byte {
+	buffer := newBuffer(0x142)
+	buffer.WriteShort(0)
+	buffer.WriteStringWithShortSize(t.ProtocolInfo.PackageName)
+	return buffer.ToByteArray()
+}
+
+func (t *Tlv) T144() []byte {
+	buffer := newBuffer(0x144)
+	builder := packet.CreateBuilder()
+	tlvArray := []int{
+		0x109, 0x52d, 0x124, 0x128, 0x16e,
+	}
+	builder.WriteShort(len(tlvArray))
+	for _, ver := range tlvArray {
+		switch ver {
+		case 0x109:
+			builder.WriteBytes(t.T109())
+		case 0x52d:
+			builder.WriteBytes(t.T52d())
+		case 0x124:
+			builder.WriteBytes(t.T124())
+		case 0x128:
+			builder.WriteBytes(t.T128())
+		case 0x16e:
+			builder.WriteBytes(t.T16e())
+		}
+	}
+	buffer.WriteBytes(tea.NewCipher(t.Android.GetTgtgKey()).Encrypt(builder.Bytes()))
+	return buffer.ToByteArray()
+}
+
+func (t *Tlv) T52d() []byte {
+	buffer := newBuffer(0x52d)
+	deviceReport := login.DeviceReport{
+		Bootloader:  []byte("unknown"),
+		Version:     []byte("Linux version 4.19.113-perf-gb3dd08fa2aaa (builder@c5-miui-ota-bd143.bj) (clang version 8.0.12 for Android NDK) #1 SMP PREEMPT Thu Feb 4 04:37:10 CST 2021;"),
+		Codename:    []byte("REL"),
+		Incremental: []byte("20.8.13"),
+		Fingerprint: []byte("Xiaomi/vangogh/vangogh:11/RKQ1.200826.002/21.2.4:user/release-keys"),
+		BootId:      []byte(""),
+		AndroidId:   []byte(t.Android.AndroidId),
+		Baseband:    []byte(""),
+		InnerVer:    []byte("21.2.4"),
+	}
+	bytes, _ := proto.Marshal(&deviceReport)
+	buffer.WriteBytes(bytes)
+	return buffer.ToByteArray()
+}
+
+func (t *Tlv) T16e() []byte {
+	buffer := newBuffer(0x16e)
+	buffer.WriteString(t.Android.MachineName)
+	return buffer.ToByteArray()
+}
+
+/**
 fun t144(): ByteArray {
 val tlvBuilder = TlvBuilder(0x144)
 val builder = ByteBuilder()
@@ -421,11 +499,6 @@ A1
 return tlvBuilder.toByteArray()
 }
 
-private fun t52d(): ByteArray {
-val tlvBuilder = TlvBuilder(0x52d)
-tlvBuilder.writeBytes(DeviceReport().toByteArray())
-return tlvBuilder.toByteArray()
-}
 
 fun t542(): ByteArray {
 val tlvBuilder = TlvBuilder(0x542)
@@ -467,6 +540,9 @@ return tlvBuilder.toByteArray()
 */
 
 func newBuffer(ver int) *Buffer {
-	buffer := Buffer{tlvVer: ver}
+	buffer := Buffer{
+		tlvVer: ver,
+		packet: packet.CreateBuilder(),
+	}
 	return &buffer
 }

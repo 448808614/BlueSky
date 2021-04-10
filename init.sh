@@ -1,5 +1,9 @@
 
 # 安装Protobuf-Go
+go get github.com/golang/protobuf/proto
+go get -u github.com/golang/protobuf/protoc-gen-go
+# gogo-proto使用了golang-protobuf的库
+
 go get github.com/gogo/protobuf/proto
 go get github.com/gogo/protobuf/protoc-gen-gogo
 go get github.com/gogo/protobuf/protoc-gen-gofast

@@ -41,11 +41,43 @@ func (b *Buffer) WriteString(s string) error {
 	return b.packet.WriteString(s)
 }
 
+func (b *Buffer) WriteStringWithShortSize(s string, add ...int) error {
+	a := 0
+	if len(add) >= 1 {
+		a = add[0]
+	}
+	return b.packet.WriteStringWithShortSize(s, a)
+}
+
+func (b *Buffer) WriteStringWithSize(s string, add ...int) error {
+	a := 0
+	if len(add) >= 1 {
+		a = add[0]
+	}
+	return b.packet.WriteStringWithSize(s, a)
+}
+
+func (b *Buffer) WriteBytesWithShortSize(s []byte, add ...int) error {
+	a := 0
+	if len(add) >= 1 {
+		a = add[0]
+	}
+	return b.packet.WriteBytesWithShortSize(s, a)
+}
+
+func (b *Buffer) WriteBytesWithSize(s []byte, add ...int) error {
+	a := 0
+	if len(add) >= 1 {
+		a = add[0]
+	}
+	return b.packet.WriteBytesWithSize(s, a)
+}
+
 func (b *Buffer) ToByteArray() []byte {
 	buffer := packet.CreateBuilder()
-	_ = buffer.WriteShort(b.tlvVer)
+	buffer.WriteShort(b.tlvVer)
 	body := b.packet.Bytes()
-	_ = buffer.WriteShort(len(body))
-	_ = buffer.WriteBytes(body)
+	buffer.WriteShort(len(body))
+	buffer.WriteBytes(body)
 	return buffer.Bytes()
 }

@@ -2,6 +2,7 @@ package androidqq
 
 import (
 	"androidqq/account"
+	"androidqq/env"
 	"androidqq/record"
 	"androidqq/tlv"
 	"api"
@@ -10,7 +11,7 @@ import (
 
 // BotType
 const (
-	// 未登录
+	// NoLogin 未登录
 	NoLogin int = iota
 )
 
@@ -29,10 +30,19 @@ func NewBot(uin int, password string, isHd bool) *BlueSky {
 	botRecord := record.BotRecord{
 		InitTime: int(time.Now().Unix()),
 	}
-
+	android := env.Android{}
+	protocolInfo := api.GetProtocolInfo(isHd)
+	t := tlv.Tlv{
+		BotAccount:   &botAccount,
+		ProtocolInfo: protocolInfo,
+		Record:       &botRecord,
+		Android:      &android,
+	}
 	return &BlueSky{
-		Account:   &botAccount,
-		BotStatus: NoLogin,
-		Record:    &botRecord,
+		Account:      &botAccount,
+		BotStatus:    NoLogin,
+		Record:       &botRecord,
+		ProtocolInfo: protocolInfo,
+		Tlv:          &t,
 	}
 }

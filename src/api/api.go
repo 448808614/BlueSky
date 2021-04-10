@@ -35,6 +35,8 @@ type ProtocolInfo struct {
 	MsfSSoVersion int
 	MiscBitmap    int
 	SubSigMap     int
+	TgtVersion    int
+	PackageName   string
 }
 
 // GetTencentServer 获取腾讯QQ服务器
@@ -81,6 +83,8 @@ func GetProtocolInfo(isHd bool) *ProtocolInfo {
 			MsfSSoVersion: json2.GetInt(info, "msfSsoVer"),
 			MiscBitmap:    json2.GetInt(info, "miscBitmap"),
 			SubSigMap:     json2.GetInt(info, "subSigMap"),
+			TgtVersion:    json2.GetInt(info, "tgtgVer"),
+			PackageName:   json2.GetString(info, "packageName"),
 		}
 	}
 	log.Default().Println("登录失败，无法获取协议信息")
