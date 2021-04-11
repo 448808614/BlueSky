@@ -10,6 +10,8 @@ Go版本号：1.16
 
 协议版本：8.4.8
 
+[ --> 点我查看BlueSky的开发进度](https://github.com/zhangshikj/BlueSky/tree/main/plans)
+
 # 参与人员
 
  - 伏秋洛 （协议开发与指导）
