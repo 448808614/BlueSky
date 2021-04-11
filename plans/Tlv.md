@@ -42,6 +42,48 @@
 
 - [x] T16e *设备名称*
 
+- [x] T174 *Unknown*
+
+- [x] T177 *Oicq开发包构建版本*
+
+- [x] T17a *验证码刷新*
+
+- [x] T17c *填入验证码*
+
+- [x] T187 *MacAddress*
+
+- [x] T188 *AndroidId*
+
+- [x] T191 *验证方法*
+
+- [x] T193 *滑块Ticket*
+
+- [x] T194 *Imsi*
+
+- [x] T197 *DeviceLockMobileType*
+
+- [x] T198 *Unknown*
+
+- [x] T202 *Wifi信息*
+
+- [ ] T400 *由腾讯提供*
+
+- [x] T401 *刷新Token*
+
+- [x] T402 *由腾讯提供*
+
+- [x] T403 *由腾讯提供*
+
+- [x] T511 *Domains*
+
+- [x] T516 *Unknown*
+
+- [x] T521 *Unknown*
+
 - [x] T52d *基带信息*
+
+- [x] T536 *LoginExtraData*
+
+- [x] T542 *Unknown*
 
 - [x] T544 *传递标识*
