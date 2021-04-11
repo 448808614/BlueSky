@@ -1,6 +1,6 @@
 # BlueSky
 
-![](https://img.shields.io/badge/Go-1.16-green.svg
+![](https://img.shields.io/badge/Go-1.16-green.svg)
 
 Go版本号：1.16
 
