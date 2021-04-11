@@ -10,8 +10,7 @@ var BotMap = map[int]*bluesky.BlueSky{}
 func main() {
 	bot := bluesky.NewBot(1372362033, "911586abc", false)
 
-	println(bot.Tlv)
-
+	println(bot.Login())
 }
 
 //export love

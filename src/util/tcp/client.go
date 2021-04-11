@@ -52,7 +52,7 @@ func (t *Tcp) Receive(block func(body []byte)) {
 						var bb = make([]byte, l)
 						_, err := t.reader.Read(bb)
 						if err == nil {
-							go block(append(packet.Int32ToBuf(l), bb...))
+							go block(bb)
 						} else {
 							log.Default().Println(err)
 						}

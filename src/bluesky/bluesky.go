@@ -7,6 +7,7 @@ import (
 	"bluesky/record"
 	"bluesky/tlv"
 	"time"
+	"util/tcp"
 )
 
 // BotType
@@ -22,6 +23,11 @@ type BlueSky struct {
 	ProtocolInfo *api.ProtocolInfo
 	Record       *record.BotRecord
 	Tlv          *tlv.Tlv
+
+	// 与腾讯服务器的连接器
+	client *tcp.Tcp
+	// 接解包器
+	receiver *Receiver
 }
 
 // TODO("登录返回包需要TLV-16A")
