@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="GoBuildArm" type="GoApplicationRunConfiguration" factoryName="Go Application">
+  <configuration default="false" name="GoBuildSo-Arm" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="BlueSky" />
     <working_directory value="$PROJECT_DIR$" />
     <go_parameters value="-buildmode=c-shared -o output/android/armeabi-v7a/libcore.so" />
@@ -10,8 +10,8 @@
       <env name="CC" value="C:\Users\Administrator\AppData\Local\Android\Sdk\ndk\22.1.7171670\toolchains\llvm\prebuilt\windows-x86_64\bin\armv7a-linux-androideabi21-clang" />
     </envs>
     <kind value="FILE" />
-    <filePath value="$PROJECT_DIR$/src/main.go" />
     <directory value="$PROJECT_DIR$" />
+    <filePath value="$PROJECT_DIR$/src/main.go" />
     <option name="run" value="false" />
     <method v="2" />
   </configuration>

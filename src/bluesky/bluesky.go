@@ -1,11 +1,11 @@
-package androidqq
+package bluesky
 
 import (
-	"androidqq/account"
-	"androidqq/env"
-	"androidqq/record"
-	"androidqq/tlv"
 	"api"
+	"bluesky/account"
+	"bluesky/env"
+	"bluesky/record"
+	"bluesky/tlv"
 	"time"
 )
 

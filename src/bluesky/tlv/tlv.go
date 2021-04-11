@@ -1,10 +1,10 @@
 package tlv
 
 import (
-	"androidqq/account"
-	"androidqq/env"
-	"androidqq/record"
 	"api"
+	"bluesky/account"
+	"bluesky/env"
+	"bluesky/record"
 )
 
 type Tlv struct {

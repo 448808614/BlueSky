@@ -1,0 +1,17 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="GoBuildDll-Arm64" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <module name="BlueSky" />
+    <working_directory value="$PROJECT_DIR$" />
+    <go_parameters value="-buildmode=c-shared -o output/windows/arm64/libcore.dll" />
+    <envs>
+      <env name="GOARCH" value="amd64" />
+      <env name="GOOS" value="windows" />
+      <env name="CGO_ENABLED" value="1" />
+    </envs>
+    <kind value="FILE" />
+    <directory value="$PROJECT_DIR$" />
+    <filePath value="$PROJECT_DIR$/src/main.go" />
+    <option name="run" value="false" />
+    <method v="2" />
+  </configuration>
+</component>

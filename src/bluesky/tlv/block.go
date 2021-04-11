@@ -1,7 +1,7 @@
 package tlv
 
 import (
-	"androidqq/record"
+	"bluesky/record"
 	"github.com/gogo/protobuf/proto"
 	"math/rand"
 	login "protocol/protobuf"

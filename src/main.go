@@ -2,13 +2,13 @@ package main
 
 import "C"
 import (
-	"androidqq"
+	"bluesky"
 )
 
-var BotMap = map[int]*androidqq.BlueSky{}
+var BotMap = map[int]*bluesky.BlueSky{}
 
 func main() {
-	bot := androidqq.NewBot(1372362033, "911586abc", false)
+	bot := bluesky.NewBot(1372362033, "911586abc", false)
 
 	println(bot.Tlv)
 
