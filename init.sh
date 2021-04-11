@@ -17,3 +17,4 @@ mkdir google.golang.org
 cd google.golang.org
 git clone https://github.com/protocolbuffers/protobuf-go.git
 mv protobuf-go protobuf
+# Windows下没有mv命令，请手动重命名文件夹
