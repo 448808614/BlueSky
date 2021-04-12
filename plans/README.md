@@ -2,6 +2,8 @@
 
 [Tlv进度 --> 点我查看进度嗷](https://github.com/zhangshikj/BlueSky/blob/main/plans/Tlv.md)
 
+[协议进度 --> 点我进去查看](https://github.com/zhangshikj/BlueSky/blob/main/plans/protocol.md)
+
 - [ ] 使用密码登录账号
 
 - [ ] 使用手机号验证码登陆
