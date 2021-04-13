@@ -1,8 +1,8 @@
 package account
 
 import (
+	"util/bytes"
 	"util/cryptor/md5"
-	"util/packet"
 )
 
 type BotAccount struct {
@@ -15,7 +15,7 @@ func (a *BotAccount) Md5Password() []byte {
 }
 
 func (a *BotAccount) Md5UinPassword() []byte {
-	builder := packet.CreateBuilderByData(a.Md5Password())
+	builder := bytes.CreateBuilderByData(a.Md5Password())
 	_ = builder.WriteLong(a.Uin)
 	return md5.BsToMd5Bytes(builder.Bytes())
 }

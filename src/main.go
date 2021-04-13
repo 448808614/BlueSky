@@ -11,6 +11,7 @@ func main() {
 	bot := bluesky.NewBot(1372362033, "911586abc", false)
 
 	println(bot.Login())
+
 }
 
 //export love

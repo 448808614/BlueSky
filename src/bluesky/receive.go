@@ -2,6 +2,7 @@ package bluesky
 
 import (
 	"container/list"
+	"util/hex"
 	"util/tcp"
 )
 
@@ -23,33 +24,15 @@ type Packet struct {
 	Element *list.Element
 }
 
-func (r *Receiver) AddWaiter(cmd string, seq int) *list.Element {
-	pack := Packet{Cmd: cmd, Seq: seq, isOver: false}
-	return r.waiter.PushFront(&pack)
-}
-
-func (r *Receiver) WaitPacket(elem *list.Element) *Packet {
-	waiter, ok := elem.Value.(*Packet)
-	if ok {
-		for waiter.isOver == false {
-			if waiter.isOver == true {
-				break
-			}
-		}
-		return waiter
-	} else {
-		panic("这个屑玩意不是一个接包器~")
-	}
-}
-
 // InitReceive 初始化借包器
-func (s *BlueSky) InitReceive() *Receiver {
+func (r *BlueSky) InitReceive() *Receiver {
 	receiver := Receiver{
-		client: s.client,
+		client: r.client,
 		waiter: list.New(),
 	}
-	s.client.Receive(func() func(body []byte) {
+	r.client.Receive(func() func(body []byte) {
 		return func(body []byte) {
+			println(hex.Bytes2Str(body))
 
 			l := receiver.waiter
 			for element := l.Front(); element != nil; element = element.Next() {

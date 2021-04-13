@@ -7,10 +7,10 @@ import (
 	login "protocol/protobuf"
 	"strconv"
 	"strings"
+	"util/bytes"
 	"util/cryptor/md5"
 	"util/cryptor/tea"
 	"util/hex"
-	"util/packet"
 )
 
 func (t *Tlv) T1() []byte {
@@ -113,7 +113,7 @@ func (t *Tlv) T1162() []byte {
 func (t *Tlv) T106(loginType int) []byte {
 	buffer := newBuffer(0x106)
 
-	builder := packet.CreateBuilder()
+	builder := bytes.CreateBuilder()
 	builder.WriteShort(t.ProtocolInfo.TgtVersion)
 	builder.WriteInt(rand.Int())
 	builder.WriteInt(t.ProtocolInfo.MsfSSoVersion)
@@ -201,13 +201,13 @@ func (t *Tlv) T142() []byte {
 
 func (t *Tlv) T109() []byte {
 	buffer := newBuffer(0x109)
-	buffer.WriteBytes(md5.StrToMd5Bytes(t.Android.AndroidId))
+	buffer.WriteBytes(md5.ToMd5Bytes(t.Android.AndroidId))
 	return buffer.ToByteArray()
 }
 
 func (t *Tlv) T144() []byte {
 	buffer := newBuffer(0x144)
-	builder := packet.CreateBuilder()
+	builder := bytes.CreateBuilder()
 	tlvArray := []int{
 		0x109, 0x52d, 0x124, 0x128, 0x16e,
 	}
@@ -322,13 +322,13 @@ func (t *Tlv) T17c(code string) []byte {
 
 func (t *Tlv) T187() []byte {
 	buffer := newBuffer(0x187)
-	buffer.WriteBytes(md5.StrToMd5Bytes(t.Android.MacAddress))
+	buffer.WriteBytes(md5.ToMd5Bytes(t.Android.MacAddress))
 	return buffer.ToByteArray()
 }
 
 func (t *Tlv) T188() []byte {
 	buffer := newBuffer(0x188)
-	buffer.WriteBytes(md5.StrToMd5Bytes(t.Android.AndroidId))
+	buffer.WriteBytes(md5.ToMd5Bytes(t.Android.AndroidId))
 	return buffer.ToByteArray()
 }
 
@@ -347,7 +347,7 @@ func (t *Tlv) T193(ticket string) []byte {
 
 func (t *Tlv) T194() []byte {
 	buffer := newBuffer(0x194)
-	buffer.WriteBytes(md5.StrToMd5Bytes(t.Android.Imsi))
+	buffer.WriteBytes(md5.ToMd5Bytes(t.Android.Imsi))
 	return buffer.ToByteArray()
 }
 
@@ -367,7 +367,7 @@ func (t *Tlv) T198() []byte {
 
 func (t *Tlv) T202() []byte {
 	buffer := newBuffer(0x202)
-	buffer.WriteBytesWithShortSize(md5.StrToMd5Bytes(t.Android.WifiBSSID))
+	buffer.WriteBytesWithShortSize(md5.ToMd5Bytes(t.Android.WifiBSSID))
 	buffer.WriteStringWithShortSize("\"" + t.Android.WifiSSID + "\"")
 	return buffer.ToByteArray()
 }
@@ -376,11 +376,11 @@ func (t *Tlv) T202() []byte {
 
 func (t *Tlv) T401() []byte {
 	buffer := newBuffer(0x401)
-	builder := packet.CreateBuilder()
+	builder := bytes.CreateBuilder()
 	builder.WriteBytes(t.Android.GetGuid())
 	builder.WriteString("1234567890123456")
 	builder.WriteBytes(t.Record.GetKey(record.TLV402).Source)
-	buffer.WriteBytes(md5.BsToMd5Bytes(builder.Bytes()))
+	buffer.WriteBytes(md5.ToMd5Bytes(builder.Bytes()))
 	return buffer.ToByteArray()
 }
 
@@ -482,7 +482,7 @@ func (t *Tlv) T544() []byte {
 	buffer.WriteShort(2 + randSize + requestInfoSize)
 	// 包括RandSize长度的长度所以加2
 	buffer.WriteShort(randSize)
-	randBs := packet.RandBytes(randSize)
+	randBs := bytes.RandBytes(randSize)
 	buffer.WriteBytes(randBs)
 
 	buffer.WriteShort(requestInfoSize) // 接下来的东西的长度
@@ -497,13 +497,13 @@ func (t *Tlv) T544() []byte {
 	// 1 为 4bit --> buffer.WriteInt(1)
 
 	buffer.WriteBytes(func() []byte {
-		builder := packet.CreateBuilder()
+		builder := bytes.CreateBuilder()
 		builder.WriteByte(0)
 		builder.WriteByte(0)
 		builder.WriteByte(0)
 
 		// 看不懂随机吧
-		key := packet.RandBytes(16)
+		key := bytes.RandBytes(16)
 		if true {
 			key[0] = 1
 		}
@@ -515,7 +515,7 @@ func (t *Tlv) T544() []byte {
 	buffer.WriteString("A6B745BF24A2C277527716F6F36EB68D")
 	// 固定了，太奇怪了
 
-	buffer.WriteBytes(packet.RandBytes(4))
+	buffer.WriteBytes(bytes.RandBytes(4))
 
 	buffer.WriteInt(0)
 
@@ -525,7 +525,7 @@ func (t *Tlv) T544() []byte {
 func newBuffer(ver int) *Buffer {
 	buffer := Buffer{
 		tlvVer: ver,
-		packet: packet.CreateBuilder(),
+		packet: bytes.CreateBuilder(),
 	}
 	return &buffer
 }

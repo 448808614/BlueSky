@@ -2,7 +2,7 @@ package requestf
 
 import (
 	"fmt"
-	"util/protocol/codec"
+	"util/jce/codec"
 )
 
 //RequestPacket strcut implement

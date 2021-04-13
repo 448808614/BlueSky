@@ -6,6 +6,7 @@ import (
 	"bluesky/env"
 	"bluesky/record"
 	"bluesky/tlv"
+	"container/list"
 	"time"
 	"util/tcp"
 )
@@ -14,6 +15,12 @@ import (
 const (
 	// NoLogin 未登录
 	NoLogin byte = iota
+	// Fail 因为某种原因导致登录失败（看日志）
+	Fail byte = iota
+	// HasLogin 已登录,但没有上线
+	HasLogin
+	// Online 已上线
+	Online
 )
 
 type BlueSky struct {
@@ -53,5 +60,24 @@ func NewBot(uin int, password string, isHd bool) *BlueSky {
 		Record:       &botRecord,
 		ProtocolInfo: protocolInfo,
 		Tlv:          &t,
+	}
+}
+
+func (r *BlueSky) AddWaiter(cmd string, seq int) *list.Element {
+	pack := Packet{Cmd: cmd, Seq: seq, isOver: false}
+	return r.receiver.waiter.PushFront(&pack)
+}
+
+func (r *BlueSky) WaitPacket(elem *list.Element) *Packet {
+	waiter, ok := elem.Value.(*Packet)
+	if ok {
+		for waiter.isOver == false {
+			if waiter.isOver == true {
+				break
+			}
+		}
+		return waiter
+	} else {
+		panic("这个屑玩意不是一个接包器~")
 	}
 }

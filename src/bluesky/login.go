@@ -5,18 +5,11 @@ import (
 	"util/tcp"
 )
 
-const (
-	// Fail 因为某种原因导致登录失败（看日志）
-	Fail byte = iota
-	// HasLogin 已登录
-	HasLogin
-)
-
-func (s *BlueSky) Login() byte {
+func (r *BlueSky) Login() byte {
 	server := api.GetTencentServer()
-	if s.client == nil {
-		s.client = tcp.CreateTcp(server.Host, server.Port)
-		s.InitReceive()
+	if r.client == nil {
+		r.client = tcp.CreateTcp(server.Host, server.Port)
+		r.InitReceive()
 
 	} else {
 		return HasLogin

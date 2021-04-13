@@ -1,12 +1,12 @@
 package tlv
 
 import (
-	"util/packet"
+	"util/bytes"
 )
 
 type Buffer struct {
 	tlvVer int
-	packet *packet.Packet
+	packet *bytes.Builder
 }
 
 func (b *Buffer) WriteTlv(ver int) {
@@ -74,7 +74,7 @@ func (b *Buffer) WriteBytesWithSize(s []byte, add ...int) error {
 }
 
 func (b *Buffer) ToByteArray() []byte {
-	buffer := packet.CreateBuilder()
+	buffer := bytes.CreateBuilder()
 	buffer.WriteShort(b.tlvVer)
 	body := b.packet.Bytes()
 	buffer.WriteShort(len(body))

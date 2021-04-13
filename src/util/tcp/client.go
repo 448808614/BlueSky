@@ -5,7 +5,7 @@ import (
 	"log"
 	"net"
 	"strconv"
-	"util/packet"
+	"util/bytes"
 )
 
 type Tcp struct {
@@ -47,7 +47,7 @@ func (t *Tcp) Receive(block func(body []byte)) {
 				var ll = make([]byte, 4)
 				_, err := t.reader.Read(ll)
 				if err == nil {
-					l, err := packet.BufToInt32(ll)
+					l, err := bytes.BufToInt32(ll)
 					if err == nil {
 						var bb = make([]byte, l)
 						_, err := t.reader.Read(bb)

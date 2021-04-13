@@ -139,56 +139,181 @@ func bReadU64(r *bytes.Reader, data *uint64) error {
 	return err
 }
 
-//go:nosplit
-func (b *Buffer) WriteHead(ty byte, tag byte) error {
+func (os *Buffer) WriteHead(ty byte, tag byte) error {
 	if tag < 15 {
 		data := (tag << 4) | ty
-		return b.buf.WriteByte(data)
+		return os.buf.WriteByte(data)
 	} else {
 		data := (15 << 4) | ty
-		if err := b.buf.WriteByte(data); err != nil {
+		if err := os.buf.WriteByte(data); err != nil {
 			return err
 		}
-		return b.buf.WriteByte(tag)
+		return os.buf.WriteByte(tag)
 	}
 }
 
 // Reset clean the buffer.
-func (b *Buffer) Reset() {
-	b.buf.Reset()
+func (os *Buffer) Reset() {
+	os.buf.Reset()
 }
 
 // WriteSliceUint8 write []uint8 to the buffer.
-func (b *Buffer) WriteSliceUint8(data []uint8) error {
-	_, err := b.buf.Write(data)
+func (os *Buffer) WriteSliceUint8(data []uint8) error {
+	_, err := os.buf.Write(data)
 	return err
 }
 
 // WriteSliceInt8 write []int8 to the buffer.
-func (b *Buffer) WriteSliceInt8(data []int8) error {
-	_, err := b.buf.Write(*(*[]uint8)(unsafe.Pointer(&data)))
+func (os *Buffer) WriteSliceInt8(data []int8) error {
+	_, err := os.buf.Write(*(*[]uint8)(unsafe.Pointer(&data)))
 	return err
 }
 
+func (os *Buffer) WriteStringBytesMap(data map[string][]byte, tag byte) error {
+	err := os.WriteHead(MAP, tag)
+	if err != nil {
+		return err
+	}
+	err = os.WriteInt32(int32(len(data)), 0)
+	if err != nil {
+		return err
+	}
+	for k, v := range data {
+		err = os.WriteString(k, 0)
+		if err != nil {
+			return err
+		}
+
+		err = os.WriteHead(SimpleList, 1)
+		if err != nil {
+			return err
+		}
+		err = os.WriteHead(BYTE, 0)
+		if err != nil {
+			return err
+		}
+		err = os.WriteInt32(int32(len(v)), 0)
+		if err != nil {
+			return err
+		}
+		err = os.WriteBytes(v)
+		if err != nil {
+			return err
+		}
+	}
+
+	return err
+}
+
+/*
+func (os *Buffer) WriteMap(data map[interface{}]interface{}, tag byte) error {
+	err := os.WriteHead(MAP, 0)
+	if err != nil {
+		return err
+	}
+	err = os.WriteInt32(int32(len(data)), 0)
+	if err != nil {
+		return err
+	}
+	for k, v := range data {
+		switch vv := k.(type) {
+		case string:
+			err = os.WriteString(vv, 0)
+			if err != nil {
+				return err
+			}
+		case int64:
+			err = os.WriteInt64(vv, 0)
+			if err != nil {
+				return err
+			}
+		case int32:
+			err = os.WriteInt32(vv, 0)
+			if err != nil {
+				return err
+			}
+		case int16:
+			err = os.WriteInt16(vv, 0)
+			if err != nil {
+				return err
+			}
+		case int8:
+			err = os.WriteInt8(vv, 0)
+			if err != nil {
+				return err
+			}
+		case uint64:
+			err = os.WriteUint32(uint32(vv), 0)
+			if err != nil {
+				return err
+			}
+		case uint32:
+			err = os.WriteUint32(vv, 0)
+			if err != nil {
+				return err
+			}
+		case uint16:
+			err = os.WriteUint16(vv, 0)
+			if err != nil {
+				return err
+			}
+		case uint8:
+			err = os.WriteUint8(vv, 0)
+			if err != nil {
+				return err
+			}
+		}
+		switch v.(type) {
+		case
+
+		}
+
+
+
+		err = os.WriteHead(codec.SIMPLE_LIST, 1)
+		if err != nil {
+			return err
+		}
+		err = os.WriteHead(codec.BYTE, 0)
+		if err != nil {
+			return err
+		}
+		err = os.Write_int32(int32(len(v)), 0)
+		if err != nil {
+			return err
+		}
+		err = os.Write_bytes(v)
+		if err != nil {
+			return err
+		}
+	}
+
+	return  err
+
+
+}
+实现起来太麻烦了，不实现了，emmmmm(懒
+*/
+
 // WriteBytes write []byte to the buffer
-func (b *Buffer) WriteBytes(data []byte) error {
-	_, err := b.buf.Write(data)
+func (os *Buffer) WriteBytes(data []byte) error {
+	_, err := os.buf.Write(data)
 	return err
 }
 
 // WriteInt8 write int8 with the tag.
-func (b *Buffer) WriteInt8(data int8, tag byte) error {
+func (os *Buffer) WriteInt8(data int8, tag byte) error {
 	var err error
 	if data == 0 {
-		if err = b.WriteHead(ZeroTag, tag); err != nil {
+		if err = os.WriteHead(ZeroTag, tag); err != nil {
 			return err
 		}
 	} else {
-		if err = b.WriteHead(BYTE, tag); err != nil {
+		if err = os.WriteHead(BYTE, tag); err != nil {
 			return err
 		}
 
-		if err = b.buf.WriteByte(byte(data)); err != nil {
+		if err = os.buf.WriteByte(byte(data)); err != nil {
 			return err
 		}
 	}
@@ -196,32 +321,32 @@ func (b *Buffer) WriteInt8(data int8, tag byte) error {
 }
 
 // WriteUint8 write uint8 with the tag
-func (b *Buffer) WriteUint8(data uint8, tag byte) error {
-	return b.WriteInt16(int16(data), tag)
+func (os *Buffer) WriteUint8(data uint8, tag byte) error {
+	return os.WriteInt16(int16(data), tag)
 }
 
 // WriteBool write bool with the tag.
-func (b *Buffer) WriteBool(data bool, tag byte) error {
+func (os *Buffer) WriteBool(data bool, tag byte) error {
 	tmp := int8(0)
 	if data {
 		tmp = 1
 	}
-	return b.WriteInt8(tmp, tag)
+	return os.WriteInt8(tmp, tag)
 }
 
 // WriteInt16 writes the int16 with the tag.
-func (b *Buffer) WriteInt16(data int16, tag byte) error {
+func (os *Buffer) WriteInt16(data int16, tag byte) error {
 	var err error
 	if data >= math.MinInt8 && data <= math.MaxInt8 {
-		if err = b.WriteInt8(int8(data), tag); err != nil {
+		if err = os.WriteInt8(int8(data), tag); err != nil {
 			return err
 		}
 	} else {
-		if err = b.WriteHead(SHORT, tag); err != nil {
+		if err = os.WriteHead(SHORT, tag); err != nil {
 			return err
 		}
 
-		if err = bWriteU16(b.buf, uint16(data)); err != nil {
+		if err = bWriteU16(os.buf, uint16(data)); err != nil {
 			return err
 		}
 	}
@@ -229,23 +354,23 @@ func (b *Buffer) WriteInt16(data int16, tag byte) error {
 }
 
 // WriteUint16 write uint16 with the tag.
-func (b *Buffer) WriteUint16(data uint16, tag byte) error {
-	return b.WriteInt32(int32(data), tag)
+func (os *Buffer) WriteUint16(data uint16, tag byte) error {
+	return os.WriteInt32(int32(data), tag)
 }
 
 // WriteInt32 write int32 with the tag.
-func (b *Buffer) WriteInt32(data int32, tag byte) error {
+func (os *Buffer) WriteInt32(data int32, tag byte) error {
 	var err error
 	if data >= math.MinInt16 && data <= math.MaxInt16 {
-		if err = b.WriteInt16(int16(data), tag); err != nil {
+		if err = os.WriteInt16(int16(data), tag); err != nil {
 			return err
 		}
 	} else {
-		if err = b.WriteHead(INT, tag); err != nil {
+		if err = os.WriteHead(INT, tag); err != nil {
 			return err
 		}
 
-		if err = bWriteU32(b.buf, uint32(data)); err != nil {
+		if err = bWriteU32(os.buf, uint32(data)); err != nil {
 			return err
 		}
 	}
@@ -253,23 +378,23 @@ func (b *Buffer) WriteInt32(data int32, tag byte) error {
 }
 
 // WriteUint32 write uint32 data with the tag.
-func (b *Buffer) WriteUint32(data uint32, tag byte) error {
-	return b.WriteInt64(int64(data), tag)
+func (os *Buffer) WriteUint32(data uint32, tag byte) error {
+	return os.WriteInt64(int64(data), tag)
 }
 
 // WriteInt64 write int64 with the tag.
-func (b *Buffer) WriteInt64(data int64, tag byte) error {
+func (os *Buffer) WriteInt64(data int64, tag byte) error {
 	var err error
 	if data >= math.MinInt32 && data <= math.MaxInt32 {
-		if err = b.WriteInt32(int32(data), tag); err != nil {
+		if err = os.WriteInt32(int32(data), tag); err != nil {
 			return err
 		}
 	} else {
-		if err = b.WriteHead(LONG, tag); err != nil {
+		if err = os.WriteHead(LONG, tag); err != nil {
 			return err
 		}
 
-		if err = bWriteU64(b.buf, uint64(data)); err != nil {
+		if err = bWriteU64(os.buf, uint64(data)); err != nil {
 			return err
 		}
 	}
@@ -277,62 +402,62 @@ func (b *Buffer) WriteInt64(data int64, tag byte) error {
 }
 
 // WriteFloat32 writes float32 with the tag.
-func (b *Buffer) WriteFloat32(data float32, tag byte) error {
+func (os *Buffer) WriteFloat32(data float32, tag byte) error {
 	var err error
-	if err = b.WriteHead(FLOAT, tag); err != nil {
+	if err = os.WriteHead(FLOAT, tag); err != nil {
 		return err
 	}
 
-	err = bWriteU32(b.buf, math.Float32bits(data))
+	err = bWriteU32(os.buf, math.Float32bits(data))
 	return err
 }
 
 // WriteFloat64 writes float64 with the tag.
-func (b *Buffer) WriteFloat64(data float64, tag byte) error {
+func (os *Buffer) WriteFloat64(data float64, tag byte) error {
 	var err error
-	if err = b.WriteHead(DOUBLE, tag); err != nil {
+	if err = os.WriteHead(DOUBLE, tag); err != nil {
 		return err
 	}
 
-	err = bWriteU64(b.buf, math.Float64bits(data))
+	err = bWriteU64(os.buf, math.Float64bits(data))
 	return err
 }
 
 // WriteString writes string data with the tag.
-func (b *Buffer) WriteString(data string, tag byte) error {
+func (os *Buffer) WriteString(data string, tag byte) error {
 	var err error
 	if len(data) > 255 {
-		if err = b.WriteHead(STRING4, tag); err != nil {
+		if err = os.WriteHead(STRING4, tag); err != nil {
 			return err
 		}
 
-		if err = bWriteU32(b.buf, uint32(len(data))); err != nil {
+		if err = bWriteU32(os.buf, uint32(len(data))); err != nil {
 			return err
 		}
 	} else {
-		if err = b.WriteHead(STRING1, tag); err != nil {
+		if err = os.WriteHead(STRING1, tag); err != nil {
 			return err
 		}
 
-		if err = bWriteU8(b.buf, byte(len(data))); err != nil {
+		if err = bWriteU8(os.buf, byte(len(data))); err != nil {
 			return err
 		}
 	}
 
-	if _, err = b.buf.WriteString(data); err != nil {
+	if _, err = os.buf.WriteString(data); err != nil {
 		return err
 	}
 	return nil
 }
 
 // ToBytes make the buffer to []byte
-func (b *Buffer) ToBytes() []byte {
-	return b.buf.Bytes()
+func (os *Buffer) ToBytes() []byte {
+	return os.buf.Bytes()
 }
 
 // Grow grows the size of the buffer.
-func (b *Buffer) Grow(size int) {
-	b.buf.Grow(size)
+func (os *Buffer) Grow(size int) {
+	os.buf.Grow(size)
 }
 
 //Reset clean the Reader.
@@ -594,6 +719,54 @@ func (b *Reader) ReadSliceUint8(data *[]uint8, len int32, require bool) error {
 		err = fmt.Errorf("Read_slice_uint8 error:%v", err)
 	}
 	return err
+}
+
+func (b *Reader) ReadStringBytesMap(tag byte) (map[string][]byte, error) {
+	ret := map[string][]byte{}
+	err, have := b.SkipTo(MAP, tag, false)
+	if err != nil {
+		return ret, err
+	}
+	var length int32 = 0
+	err = b.ReadInt32(&length, 0, true)
+	if err != nil {
+		return ret, err
+	}
+	var ty byte
+	for i, e := int32(0), length; i < e; i++ {
+		var k string
+		var v []byte
+		err = b.ReadString(&k, 0, false)
+		if err != nil {
+			return ret, err
+		}
+		err, have, ty = b.SkipToNoCheck(1, false)
+		if err != nil {
+			return ret, err
+		}
+		if have {
+			if ty == SimpleList {
+				err, _ = b.SkipTo(BYTE, 0, true)
+				if err != nil {
+					return ret, err
+				}
+				var byteLen int32 = 0
+				err = b.ReadInt32(&byteLen, 0, true)
+				if err != nil {
+					return ret, err
+				}
+				err = b.ReadBytes(&v, byteLen, true)
+				if err != nil {
+					return ret, err
+				}
+				ret[k] = v
+			} else {
+				err = fmt.Errorf("require vector, but not")
+				return ret, err
+			}
+		}
+	}
+	return ret, err
 }
 
 //ReadBytes reads []byte for the given length and the require or optional sign.
@@ -862,7 +1035,7 @@ func (b *Reader) ToString() string {
 	return string(b.ref[:])
 }
 
-//ToString make the reader to string
+// ToBytes make the reader to string
 func (b *Reader) ToBytes() []byte {
 	return b.ref
 }
