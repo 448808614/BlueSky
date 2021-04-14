@@ -4,7 +4,7 @@
 
 [协议进度 --> 点我进去查看](https://github.com/zhangshikj/BlueSky/blob/main/plans/protocol.md)
 
-- [ ] 使用密码登录账号
+- [x] 使用密码登录账号
 
 - [ ] 使用手机号验证码登陆
 
